@@ -41,7 +41,7 @@ import (
 
 	"golang.org/x/net/context"
 
-	"github.com/nlopes/slack"
+	"github.com/slack-go/slack"
 )
 
 const (
@@ -53,7 +53,11 @@ const (
 
 // New constructs a new Bot using the slackToken to authorize against the Slack service.
 func New(slackToken string) *Bot {
-	b := &Bot{Client: slack.New(slackToken)}
+	b := &Bot{Client: slack.New(
+						slackToken,
+						slack.OptionDebug(true),
+						slack.OptionLog(log.New(os.Stdout, "slack-bot: ", log.Lshortfile|log.LstdFlags)),
+	)}
 	return b
 }
 
@@ -78,20 +82,36 @@ func (b *Bot) Run() {
 			ctx := context.Background()
 			ctx = AddBotToContext(ctx, b)
 			switch ev := msg.Data.(type) {
+			case *slack.HelloEvent:
+			// Ignore hello
+
 			case *slack.ConnectedEvent:
-				fmt.Printf("Connected: %#v\n", ev.Info.User)
+				fmt.Println("Infos:", ev.Info)
+				fmt.Println("Connection counter:", ev.ConnectionCount)
+				// Replace C2147483705 with your Channel ID
+				b.RTM.SendMessage(rtm.NewOutgoingMessage("Hello world", "C78S6FUUQ"))
 				b.setBotID(ev.Info.User.ID)
+
 			case *slack.MessageEvent:
 				// ignore messages from the current user, the bot user
 				if b.botUserID == ev.User {
 					continue
 				}
-
+				fmt.Printf("Message: %v\n", ev)
 				ctx = AddMessageToContext(ctx, ev)
 				var match RouteMatch
 				if matched, ctx := b.Match(ctx, &match); matched {
 					match.Handler(ctx)
 				}
+
+			case *slack.PresenceChangeEvent:
+				fmt.Printf("Presence Change: %v\n", ev)
+
+			case *slack.LatencyReport:
+				fmt.Printf("Current latency: %v\n", ev.Value)
+
+			case *slack.DesktopNotificationEvent:
+				fmt.Printf("Desktop Notification: %v\n", ev)
 
 			case *slack.RTMError:
 				fmt.Printf("Error: %s\n", ev.Error())
