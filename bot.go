@@ -40,6 +40,7 @@ import (
 	"time"
 	"log"
 	"os"
+	"rtm"
 	"golang.org/x/net/context"
 
 	"github.com/slack-go/slack"
