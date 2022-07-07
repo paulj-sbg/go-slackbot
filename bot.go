@@ -142,10 +142,9 @@ func (b *Bot) ReplyWithAttachments(evt *slack.MessageEvent, attachments []slack.
 	channelID, timestamp, err := b.Client.PostMessage(
 		evt.Msg.Channel,
 		slack.MsgOptionText("", false),
-		slack.MsgOptionAttachments(attachments),
-		slack.MsgOptionAsUser(true)
+		slack.MsgOptionAttachments(attachments...),
+		slack.MsgOptionAsUser(true),
 	)
-
 	if err != nil {
 		fmt.Printf("%s\n", err)
 		return
