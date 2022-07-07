@@ -38,7 +38,8 @@ package slackbot
 import (
 	"fmt"
 	"time"
-
+	"log"
+	"os"
 	"golang.org/x/net/context"
 
 	"github.com/slack-go/slack"
