@@ -40,9 +40,7 @@ import (
 	"time"
 	"log"
 	"os"
-	"rtm"
 	"golang.org/x/net/context"
-
 	"github.com/slack-go/slack"
 )
 
@@ -91,7 +89,7 @@ func (b *Bot) Run() {
 				fmt.Println("Infos:", ev.Info)
 				fmt.Println("Connection counter:", ev.ConnectionCount)
 				// Replace C2147483705 with your Channel ID
-				b.RTM.SendMessage(rtm.NewOutgoingMessage("Hello world", "C78S6FUUQ"))
+				b.RTM.SendMessage(b.RTM.NewOutgoingMessage("Hello world", "C78S6FUUQ"))
 				b.setBotID(ev.Info.User.ID)
 
 			case *slack.MessageEvent:
