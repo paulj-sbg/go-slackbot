@@ -138,10 +138,19 @@ func (b *Bot) Reply(evt *slack.MessageEvent, msg string, typing bool) {
 
 // ReplyWithAttachments replys to a message event with a Slack Attachments message.
 func (b *Bot) ReplyWithAttachments(evt *slack.MessageEvent, attachments []slack.Attachment, typing bool) {
-	params := slack.PostMessageParameters{AsUser: true}
-	params.Attachments = attachments
 
-	b.Client.PostMessage(evt.Msg.Channel, "", params)
+	channelID, timestamp, err := b.Client.PostMessage(
+		evt.Msg.Channel,
+		slack.MsgOptionText("", false),
+		slack.MsgOptionAttachments(attachments),
+		slack.MsgOptionAsUser(true)
+	)
+
+	if err != nil {
+		fmt.Printf("%s\n", err)
+		return
+	}
+	fmt.Printf("Message successfully sent to channel %s at %s", channelID, timestamp)
 }
 
 // Type sends a typing message and simulates delay (max 2000ms) based on message size.
