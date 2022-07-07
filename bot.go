@@ -55,7 +55,7 @@ const (
 func New(slackToken string) *Bot {
 	b := &Bot{Client: slack.New(
 						slackToken,
-						slack.OptionDebug(true),
+						slack.OptionDebug(false),
 						slack.OptionLog(log.New(os.Stdout, "slack-bot: ", log.Lshortfile|log.LstdFlags)),
 	)}
 	return b
